@@ -1,0 +1,12 @@
+version: '3'
+services:
+    bot:
+        build: .
+        restart: always
+        environment: 
+            BOT_PORT: 4952
+            BOT_NAME: GypsyQuipsEcho
+        volumes:
+            - ./app:/var/bot
+        env_file: 
+            './app/.env'
