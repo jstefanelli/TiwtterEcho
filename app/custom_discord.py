@@ -2,28 +2,34 @@ import discord
 import sys
 import os
 import json
+from typing import Callable
 
 class EchoClient(discord.Client):
-	def __init__(self, token: str, config_file_path: str = 'discordCfg.json'):
-		super()
+	def __init__(self, token: str, start: Callable[[], None], config_file_path: str = 'discordCfg.json'):
+		discord.Client.__init__(self)
+		self.start_cb = start
 		self.token = token
 		self.target_channels = []
 		self.config_file_path = config_file_path
 		self.loaded = False
 
 	async def on_ready(self):
-		print('[DISCORD] Ready...')
-
-		cached_user = self.user()
-		if cached_user is not None:
-			self.cached_user = cached_user
-		
-		if not self.loaded:
-			await self.load()
-			self.loaded = True
+		print('[DISCORD] Ready...', file = sys.stdout)
+		try:
+			cached_user = self.user
+			if cached_user is not None:
+				self.cached_user = cached_user
+			
+			if not self.loaded:
+				await self.load()
+				if self.start_cb != None:
+					self.start_cb()
+				self.loaded = True
+		except Exception as ex:
+			print('[DISCORD] Exception "on_ready"', str(ex), file = sys.stderr)
 
 	async def load(self):
-		print("[DISCORD] Loading...")
+		print("[DISCORD] Loading...", file = sys.stdout)
 		if os.path.exists(self.config_file_path):
 			fs = open(self.config_file_path, 'r')
 
@@ -38,7 +44,7 @@ class EchoClient(discord.Client):
 						self.target_channels.append(ch)
 
 	async def save(self):
-		print("[DISCORD] Saving...")
+		print("[DISCORD] Saving...", file = sys.stdout)
 		cfg = { 'channels': [] }
 		for channel in self.target_channels:
 			cfg.channels.append(channel.id)
@@ -79,7 +85,7 @@ class EchoClient(discord.Client):
 		if 'stop' in message.content:
 			await self.exec_stop_message(message)
 
-	async def post_tweet(self, tweet: str) -> bool:
+	async def post_tweet(self, tweet: str, url: str) -> bool:
 		if tweet == None or len(tweet.strip()) == 0:
 			return False
 		
