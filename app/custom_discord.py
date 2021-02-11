@@ -62,6 +62,7 @@ class EchoClient(discord.Client):
 	async def exec_start_message(self, message: discord.Message):
 		if message.channel in self.target_channels:
 			await message.reply("Already working")
+			return
 
 		self.target_channels.append(message.channel)
 		await self.save()
@@ -70,6 +71,7 @@ class EchoClient(discord.Client):
 	async def exec_stop_message(self, message: discord.Message):
 		if not message.channel in self.target_channels:
 			await message.reply("Not monitoring")
+			return
 
 		self.target_channels.remove(message.channel)
 		await self.save()
