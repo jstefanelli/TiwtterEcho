@@ -4,7 +4,7 @@ RUN mkdir /var/bot
 WORKDIR /var/bot
 
 RUN pip install python_twitter discord.py
-RUN mkdir logs
+RUN mkdir -p logs
 
-ENTRYPOINT [ "sh", "main.sh" ]
+ENTRYPOINT [ "python", "main.py" ]
 # ENTRYPOINT [ "bash" ]
