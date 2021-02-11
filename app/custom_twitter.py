@@ -26,7 +26,7 @@ class TweetFollower:
 		return "https://twitter.com/" + str(tweet.user.screen_name) + "/status/" + str(tweet.id)
 
 	def update(self, on_new_tweet: Callable[[str, str], None]):
-		timeline = self.api.GetUserTimeline(screen_name="_jstefanelli", count=2, since_id = self.last_tweet_id, trim_user=False, exclude_replies=True, include_rts=False)
+		timeline = self.api.GetUserTimeline(screen_name="_jstefanelli", count=10, since_id = self.last_tweet_id, trim_user=False, exclude_replies=True, include_rts=False)
 
 		for tweet in timeline:
 			on_new_tweet(tweet.full_text, TweetFollower.gen_tweet_url(tweet))
@@ -44,11 +44,10 @@ class TweetFollower:
 		fs.close()
 
 		self.last_tweet_id = data['last_tweet']
-		self.target_user = data['target_user']
 
 	def save(self):
 		fs = open(self.config_path, 'w')
-		json.dump({ 'last_tweet': self.last_tweet_id, 'target_user': self.target_user }, fs)
+		json.dump({ 'last_tweet': self.last_tweet_id }, fs)
 		fs.close()
 
 

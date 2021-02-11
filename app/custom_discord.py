@@ -37,9 +37,9 @@ class EchoClient(discord.Client):
 
 			fs.close()
 
-			if data.channels != None:
-				for channelId in data.channels:
-					ch = await self.get_channel(channelId)
+			if 'channels' in data and data['channels'] != None:
+				for channelId in data['channels']:
+					ch = self.get_channel(channelId)
 					if ch != None:
 						self.target_channels.append(ch)
 
@@ -47,7 +47,7 @@ class EchoClient(discord.Client):
 		print("[DISCORD] Saving...", file = sys.stdout)
 		cfg = { 'channels': [] }
 		for channel in self.target_channels:
-			cfg.channels.append(channel.id)
+			cfg['channels'].append(channel.id)
 
 		fs = open(self.config_file_path, "w")
 
@@ -55,7 +55,7 @@ class EchoClient(discord.Client):
 
 		fs.close()
 
-	async def on_error(self, event: str):
+	async def on_error(self, event: str, args, kwargs):
 		print("[DISCORD] Error", event, file = sys.stderr)
 		
 
@@ -76,7 +76,7 @@ class EchoClient(discord.Client):
 		await message.add_reaction('👍')
 
 	async def on_message(self, message: discord.Message):
-		if len(message.mentions) != 1 and message.mentions[0].id != self.cached_user.id:
+		if len(message.mentions) >= 1 and message.mentions[0].id != self.cached_user.id:
 			return
 
 		if 'start' in message.content:
