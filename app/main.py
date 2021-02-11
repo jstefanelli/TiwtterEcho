@@ -19,13 +19,13 @@ twitter_wait_event = threading.Event()
 
 _discord = None
 _twitter = None
-_httpserver = None
 
 tw_api_key = get_env(constants.TWITTER_API_KEY_ENV)
 tw_api_secret = get_env(constants.TWITTER_API_SECRET_ENV)
 
 tw_access_key = get_env(constants.TWITTER_ACCESS_KEY_ENV)
 tw_access_secret = get_env(constants.TWITTER_ACCESS_SECRET_ENV)
+tw_update_timer = int(get_env(constants.TWITTER_UPDATE_TIMER_ENV, 60))
 
 tw_handle = get_env(constants.TWITTER_TARGET_USER_ENV, '_jstefanelli')
 
@@ -39,7 +39,7 @@ def run_twitter():
 
 	while not twitter_wait_event.is_set():
 		_twitter.update(echo_tweet)
-		twitter_wait_event.wait(10)
+		twitter_wait_event.wait(tw_update_timer)
 	twitter_wait_event.clear()
 		
 twitter_thread = threading.Thread(None, run_twitter, 'twitter_thread')
