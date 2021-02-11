@@ -5,8 +5,5 @@ services:
         restart: always
         env_file: 
             './app/.env'
-        ports: 
-            - "${HTTP_PORT:-4953}:80"
-            - "8080:8080"
         volumes:
             - ./app:/var/bot
