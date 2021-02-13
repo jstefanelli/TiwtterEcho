@@ -22,6 +22,9 @@ class TweetFollower:
 					access_token_secret = access_secret,
 					tweet_mode='extended')
 
+	def disconnect(self):
+		self.api = None
+
 	def gen_tweet_url(tweet: twitter.Status):
 		return "https://twitter.com/" + str(tweet.user.screen_name) + "/status/" + str(tweet.id)
 

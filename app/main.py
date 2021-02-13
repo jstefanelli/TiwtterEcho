@@ -35,10 +35,17 @@ def run_twitter():
 	def echo_tweet(message: str, link: str):
 		_discord.loop.create_task(_discord.post_tweet(message, link))
 
-	_twitter.connect(tw_api_key, tw_api_secret, tw_access_key, tw_access_secret)
+	if(tw_update_timer < constants.TWITTER_RECONNECT_CUTOFF):
+		_twitter.connect(tw_api_key, tw_api_secret, tw_access_key, tw_access_secret)
 
 	while not twitter_wait_event.is_set():
+		if(tw_update_timer >= constants.TWITTER_RECONNECT_CUTOFF):
+			_twitter.connect(tw_api_key, tw_api_secret, tw_access_key, tw_access_secret)
+
 		_twitter.update(echo_tweet)
+
+		if(tw_update_timer >= constants.TWITTER_RECONNECT_CUTOFF):
+			_twitter.disconnect()
 		twitter_wait_event.wait(tw_update_timer)
 	twitter_wait_event.clear()
 		
